@@ -1,265 +1,213 @@
-# E-Commerce Analytics Project
+# E-Commerce Analytics Platform
 
-## 🎯 Project Overview
-A comprehensive SQL-based analytics project demonstrating data analyst skills through real-world e-commerce scenarios. This portfolio project showcases advanced SQL techniques, business intelligence thinking, and practical data analysis capabilities.
+A comprehensive SQL-based analytics system for multi-vendor e-commerce businesses. This platform provides deep insights into customer behavior, revenue performance, and business intelligence through advanced database design and analytical queries.
 
-## 💡 What This Project Demonstrates
+## 🎯 Overview
 
-### **Core Data Analyst Skills**
-- **SQL Proficiency**: Complex queries, joins, aggregations, and window functions
-- **Business Intelligence**: KPI development, dashboard design, and reporting
-- **Data Analysis**: Customer segmentation, trend analysis, and performance metrics
-- **Problem Solving**: Translating business questions into analytical solutions
+This e-commerce analytics platform enables businesses to understand their customers, optimize product performance, and drive revenue growth through data-driven decision making. Built with a robust database architecture and sophisticated analysis capabilities.
 
-### **Technical Competencies**
-- Writing complex SQL queries for business insights
-- Creating automated reports and dashboards
-- Performing customer behavior analysis
-- Building data models for analytics
-- Understanding database design principles
+## 💡 Key Features
 
-## 📊 Key Analysis Examples
+### **Business Intelligence**
+- Revenue analysis with growth tracking and seasonal patterns
+- Customer lifetime value calculations and segmentation
+- Product performance metrics and inventory optimization
+- Vendor performance tracking and commission analysis
 
-### 1. Revenue Analysis (Entry-Level Focus)
+### **Customer Analytics**
+- RFM (Recency, Frequency, Monetary) customer segmentation
+- Cohort analysis for retention tracking
+- Behavioral pattern analysis and conversion optimization
+- Churn prediction and customer engagement scoring
+
+### **Advanced Analytics**
+- Multi-dimensional sales analysis across products, categories, and time
+- Website engagement tracking and conversion funnel analysis
+- Search behavior optimization and product discovery insights
+- Customer journey mapping and touchpoint analysis
+
+## 🏗️ Architecture
+
+### **Database Design**
+- Normalized relational database optimized for analytical queries
+- Comprehensive business entity modeling (users, products, orders, vendors)
+- Advanced tracking tables for behavioral and engagement analytics
+- Performance-optimized indexing strategy for large-scale data
+
+### **Query Framework**
+- Modular SQL analysis organized by business function
+- Complex analytical queries using CTEs, window functions, and advanced joins
+- Scalable design supporting millions of transactions and users
+- Real-time and historical analysis capabilities
+
+## 📊 Database Schema
+
+```
+Core Business Entities:
+├── users (customers & vendors)
+├── products (catalog & inventory)
+├── orders & order_items (transactions)
+├── categories (product hierarchy)
+└── vendors (seller management)
+
+Analytics & Tracking:
+├── user_sessions (web engagement)
+├── page_views (user journey)
+├── product_reviews (satisfaction)
+├── payment_transactions (financial)
+└── search_queries (discovery patterns)
+```
+
+## 🚀 Setup Instructions
+
+### **1. Database Initialization**
 ```sql
--- Monthly revenue trends - perfect for junior analyst role
-SELECT
-    YEAR(order_date) AS year,
-    MONTH(order_date) AS month,
-    COUNT(*) AS total_orders,
-    COUNT(DISTINCT user_id) AS unique_customers,
-    SUM(total_amount) AS monthly_revenue,
-    AVG(total_amount) AS avg_order_value
-FROM orders
-WHERE order_status = 'completed'
-GROUP BY YEAR(order_date), MONTH(order_date)
-ORDER BY year, month;
+-- Create database and execute setup
+sqlcmd -i database_setup.sql
 ```
 
-### 2. Customer Segmentation Analysis
+### **2. Schema Creation**
 ```sql
--- RFM Analysis - demonstrates analytical thinking
-WITH customer_rfm AS (
-    SELECT
-        user_id,
-        DATEDIFF(DAY, MAX(order_date), GETDATE()) AS recency,
-        COUNT(*) AS frequency,
-        SUM(total_amount) AS monetary_value
-    FROM orders
-    WHERE order_status = 'completed'
-    GROUP BY user_id
-)
-SELECT
-    CASE
-        WHEN recency <= 30 AND frequency >= 5 AND monetary_value >= 500 THEN 'VIP'
-        WHEN recency <= 60 AND frequency >= 3 THEN 'Regular'
-        WHEN recency <= 90 THEN 'At Risk'
-        ELSE 'Inactive'
-    END AS customer_segment,
-    COUNT(*) AS customer_count,
-    AVG(monetary_value) AS avg_customer_value
-FROM customer_rfm
-GROUP BY 1;
+-- Execute schema files in order
+sqlcmd -i schema/core_tables.sql
+sqlcmd -i schema/analytics_tables.sql
 ```
 
-### 3. Product Performance Analysis
+### **3. Load Sample Data**
 ```sql
--- Product sales analysis - typical analyst task
-SELECT
-    p.product_name,
-    c.category_name,
-    SUM(oi.quantity) AS units_sold,
-    SUM(oi.total_price) AS revenue,
-    AVG(oi.unit_price) AS avg_price,
-    COUNT(DISTINCT oi.order_id) AS orders
-FROM order_items oi
-JOIN products p ON oi.product_id = p.product_id
-JOIN categories c ON p.category_id = c.category_id
-JOIN orders o ON oi.order_id = o.order_id
-WHERE o.order_date >= DATEADD(MONTH, -3, GETDATE())
-GROUP BY p.product_name, c.category_name
-ORDER BY revenue DESC;
+-- Load comprehensive test dataset
+sqlcmd -i data/sample_data.sql
 ```
 
-## 🚀 Entry-Level Skills Showcase
-
-### **SQL Skills Demonstrated**
-- ✅ **Joins**: Multiple table relationships and complex joins
-- ✅ **Aggregations**: SUM, COUNT, AVG, GROUP BY
-- ✅ **Window Functions**: RANK(), ROW_NUMBER(), LAG()
-- ✅ **CTEs**: Complex multi-step analysis
-- ✅ **Date Functions**: Time-based analysis and trends
-- ✅ **Conditional Logic**: CASE statements for categorization
-
-### **Business Analysis Skills**
-- ✅ **KPI Development**: Revenue, AOV, customer metrics
-- ✅ **Trend Analysis**: Month-over-month growth, seasonality
-- ✅ **Customer Analytics**: Segmentation, lifetime value
-- ✅ **Performance Metrics**: Product and category analysis
-- ✅ **Dashboard Thinking**: View creation for reporting
-
-### **Problem-Solving Approach**
-- ✅ **Business Understanding**: E-commerce domain knowledge
-- ✅ **Data Exploration**: Understanding data relationships
-- ✅ **Query Optimization**: Efficient data retrieval
-- ✅ **Result Interpretation**: Actionable insights
-
-## 📈 Sample Analysis Reports
-
-### Monthly Business Performance Report
+### **4. Run Analysis**
 ```sql
--- Executive summary - entry analyst deliverable
-SELECT
-    'Revenue Growth' AS metric,
-    FORMAT((current_month - previous_month) / previous_month * 100, 'N1') + '%' AS value
-FROM (
-    SELECT
-        SUM(CASE WHEN MONTH(order_date) = MONTH(GETDATE()) THEN total_amount END) AS current_month,
-        SUM(CASE WHEN MONTH(order_date) = MONTH(GETDATE())-1 THEN total_amount END) AS previous_month
-    FROM orders
-    WHERE YEAR(order_date) = YEAR(GETDATE())
-) t;
+-- Execute analytical queries
+sqlcmd -i analysis/business_metrics.sql
+sqlcmd -i analysis/customer_analytics.sql
+sqlcmd -i analysis/behavioral_analysis.sql
 ```
 
-### Customer Behavior Insights
+## 📈 Sample Analysis
+
+### **Revenue Performance**
 ```sql
--- Website engagement analysis
-SELECT
-    device_type,
-    AVG(session_duration_minutes) AS avg_session_time,
-    AVG(page_views) AS avg_pages_per_session,
-    COUNT(*) AS total_sessions,
-    SUM(CASE WHEN converted_in_session = 1 THEN 1 ELSE 0 END) AS conversions,
-    ROUND(SUM(CASE WHEN converted_in_session = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS conversion_rate
-FROM user_sessions
-WHERE session_start >= DATEADD(DAY, -30, GETDATE())
-GROUP BY device_type;
-```
-
-## 🎓 Learning Outcomes
-
-### **What I Learned Building This**
-- How to design databases for analytical workloads
-- Writing complex SQL queries for business insights
-- Creating automated reporting processes
-- Understanding e-commerce business metrics
-- Building scalable data solutions
-
-### **Skills Developed**
-- **SQL Mastery**: From basic queries to advanced analytics
-- **Business Intelligence**: KPI design and dashboard creation
-- **Data Modeling**: Relationship design and optimization
-- **Analytical Thinking**: Problem decomposition and solution design
-- **Documentation**: Clear communication of technical work
-
-## 🏗️ Project Structure
-
-```
-📁 E-Commerce Analytics Project
-├── 📄 Database Setup
-│   ├── database_setup.sql          # Database initialization
-│   └── schema/                     # Table definitions
-│       ├── core_tables.sql         # Business entities
-│       └── analytics_tables.sql    # Tracking tables
-├── 📊 Sample Data
-│   └── data/
-│       └── sample_data.sql         # Realistic test dataset
-└── 📈 Analysis Queries
-    ├── business_metrics.sql        # Revenue and performance analysis
-    ├── customer_analytics.sql      # Customer segmentation and RFM
-    └── behavioral_analysis.sql     # Website engagement and conversion
-```
-
-## 💼 Interview Talking Points
-
-### **For Entry-Level Positions**
-- "I built this to learn SQL and understand how data drives business decisions"
-- "Each query solves a real business problem I researched"
-- "I focused on metrics that entry-level analysts typically work with"
-- "The project helped me understand the full analytics workflow"
-
-### **Technical Discussion Points**
-- "I can walk you through how I calculated customer lifetime value"
-- "Here's how I optimized this query for better performance"
-- "I learned to validate my analysis results for accuracy"
-- "This taught me to think about data quality and edge cases"
-
-## 🎯 Entry-Level Role Alignment
-
-### **Perfect for these positions:**
-- **Junior Data Analyst** - SQL skills and business metrics
-- **Business Intelligence Analyst** - Dashboard and reporting focus
-- **Marketing Analyst** - Customer segmentation and behavior
-- **E-commerce Analyst** - Domain-specific knowledge
-- **Financial Analyst** - Revenue and performance analysis
-
-### **Key Strengths for Entry-Level**
-- **Self-Directed Learning**: Shows initiative and motivation
-- **Practical Application**: Real business scenarios, not academic exercises
-- **Comprehensive Scope**: End-to-end analytical thinking
-- **Clear Documentation**: Professional communication skills
-- **Growth Mindset**: Demonstrates continuous learning approach
-
-## 🚀 Quick Start
-
-### **Setup Instructions**
-1. **Create Database**: Run `database_setup.sql`
-2. **Create Schema**: Execute files in `schema/` folder
-3. **Load Data**: Run `data/sample_data.sql`
-4. **Run Analysis**: Execute queries from `analysis/` folder
-
-### **Sample Analysis**
-```sql
--- Monthly revenue trends
+-- Monthly revenue trends with growth analysis
 SELECT
     YEAR(order_date) AS year,
     MONTH(order_date) AS month,
     COUNT(*) AS orders,
     SUM(total_amount) AS revenue,
-    AVG(total_amount) AS avg_order_value
+    LAG(SUM(total_amount)) OVER (ORDER BY YEAR(order_date), MONTH(order_date)) AS prev_month,
+    ROUND(((SUM(total_amount) - LAG(SUM(total_amount)) OVER (ORDER BY YEAR(order_date), MONTH(order_date))) /
+           LAG(SUM(total_amount)) OVER (ORDER BY YEAR(order_date), MONTH(order_date))) * 100, 2) AS growth_percent
 FROM orders
 WHERE order_status = 'delivered'
 GROUP BY YEAR(order_date), MONTH(order_date)
 ORDER BY year DESC, month DESC;
-
--- Customer segmentation
-SELECT
-    CASE
-        WHEN total_spent >= 1000 THEN 'High Value'
-        WHEN total_spent >= 500 THEN 'Medium Value'
-        ELSE 'Low Value'
-    END AS segment,
-    COUNT(*) AS customers
-FROM (
-    SELECT user_id, SUM(total_amount) AS total_spent
-    FROM orders
-    GROUP BY user_id
-) customer_totals
-GROUP BY segment;
 ```
 
-## 📚 What This Shows Employers
+### **Customer Segmentation**
+```sql
+-- RFM customer segmentation analysis
+WITH customer_rfm AS (
+    SELECT
+        user_id,
+        DATEDIFF(DAY, MAX(order_date), GETDATE()) AS recency,
+        COUNT(*) AS frequency,
+        SUM(total_amount) AS monetary
+    FROM orders
+    WHERE order_status = 'delivered'
+    GROUP BY user_id
+)
+SELECT
+    CASE
+        WHEN recency <= 30 AND frequency >= 5 AND monetary >= 1000 THEN 'VIP Champions'
+        WHEN recency <= 60 AND frequency >= 3 THEN 'Loyal Customers'
+        WHEN recency <= 90 THEN 'At Risk'
+        ELSE 'Inactive'
+    END AS segment,
+    COUNT(*) AS customers,
+    AVG(monetary) AS avg_value
+FROM customer_rfm
+GROUP BY segment
+ORDER BY avg_value DESC;
+```
 
-### **Technical Competency**
-- Can write complex SQL queries independently
-- Understands database relationships and design
-- Knows how to optimize queries for performance
-- Comfortable with data analysis workflows
+## 💼 Business Applications
 
-### **Business Acumen**
-- Understands key e-commerce metrics
-- Can translate business questions into analysis
-- Thinks about data quality and accuracy
-- Focuses on actionable insights
+### **Executive Dashboards**
+- Real-time revenue tracking and performance KPIs
+- Customer acquisition and retention metrics
+- Product and category performance analysis
+- Vendor management and commission tracking
 
-### **Professional Skills**
-- Self-directed learning ability
-- Clear documentation and communication
-- Project organization and structure
-- Initiative to build comprehensive solutions
+### **Marketing Intelligence**
+- Customer segmentation for targeted campaigns
+- Behavioral analysis for conversion optimization
+- Cohort analysis for retention strategies
+- Search optimization and product discovery
+
+### **Operations Analytics**
+- Inventory optimization and demand forecasting
+- Vendor performance evaluation and management
+- Customer service insights and satisfaction tracking
+- Financial analysis and profitability reporting
+
+## 🔧 Technical Specifications
+
+### **Database Requirements**
+- SQL Server 2016+ (or compatible RDBMS)
+- Minimum 2GB storage for full dataset
+- Indexed for sub-second query performance on large datasets
+
+### **Query Capabilities**
+- Supports complex multi-table joins across 15+ entities
+- Advanced window functions for time-series analysis
+- CTEs for complex analytical logic
+- Optimized for both OLTP and OLAP workloads
+
+### **Scalability Features**
+- Designed to handle millions of orders and customers
+- Partitioning-ready for historical data management
+- Optimized indexing for analytical query performance
+- Modular design for easy extension and customization
+
+## 📊 Key Metrics Tracked
+
+### **Financial KPIs**
+- Monthly Recurring Revenue (MRR) and growth rates
+- Customer Lifetime Value (CLV) and acquisition costs
+- Average Order Value (AOV) and profit margins
+- Vendor commissions and marketplace revenue
+
+### **Customer Metrics**
+- Customer acquisition, retention, and churn rates
+- Engagement scores and behavioral segments
+- Purchase frequency and spending patterns
+- Satisfaction ratings and review analytics
+
+### **Operational Metrics**
+- Conversion rates across marketing channels
+- Product performance and inventory turnover
+- Website engagement and user journey analysis
+- Search effectiveness and discovery optimization
+
+## 🎯 Use Cases
+
+This platform supports comprehensive e-commerce analytics for:
+- **Marketplaces**: Multi-vendor platform management and optimization
+- **Retail Operations**: Customer behavior analysis and inventory management
+- **Business Intelligence**: Executive reporting and strategic planning
+- **Growth Analytics**: Customer acquisition and retention optimization
+
+## 📝 Query Categories
+
+- **Revenue Analysis**: Growth tracking, seasonal analysis, profitability
+- **Customer Intelligence**: Segmentation, lifetime value, behavior patterns
+- **Product Performance**: Sales analysis, inventory optimization, trending
+- **Vendor Management**: Performance tracking, commission analysis, ratings
+- **Behavioral Analytics**: User journey, conversion funnels, engagement
 
 ---
 
-**Perfect for Entry-Level Data Analyst Applications!**
-
-This project strikes the ideal balance: sophisticated enough to impress, but presented as a learning journey that's perfect for someone starting their data analytics career.
+Built for comprehensive e-commerce business intelligence and data-driven decision making.
